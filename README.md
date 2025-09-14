@@ -1,47 +1,54 @@
-# Proyecto Base Implementando Clean Architecture
+# 📌 Franchises Microservice
 
-## Antes de Iniciar
+Este microservicio gestiona **franquicias, sucursales y productos**.  
+Expone endpoints REST para administrar inventarios distribuidos en diferentes sucursales.
 
-Empezaremos por explicar los diferentes componentes del proyectos y partiremos de los componentes externos, continuando con los componentes core de negocio (dominio) y por último el inicio y configuración de la aplicación.
+---
 
-Lee el artículo [Clean Architecture — Aislando los detalles](https://medium.com/bancolombia-tech/clean-architecture-aislando-los-detalles-4f9530f35d7a)
+## ⚙️ Requisitos previos
 
-# Arquitectura
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [PostgreSQL](https://www.postgresql.org/) (opcional, el proyecto puede correr con H2 en local).
+- Java 21.
+- gradle 8.*
 
-![Clean Architecture](https://miro.medium.com/max/1400/1*ZdlHz8B0-qu9Y-QO3AXR_w.png)
+---
 
-## Domain
+## 🛠️ Variables de entorno
 
-Es el módulo más interno de la arquitectura, pertenece a la capa del dominio y encapsula la lógica y reglas del negocio mediante modelos y entidades del dominio.
+| Variable            | Descripción                              | Ejemplo                  |
+|---------------------|------------------------------------------|--------------------------|
+| `SERVER_PORT`       | Puerto de ejecución del microservicio    | `8080`                   |
+| `BD_HOST`           | Host de la base de datos                 | `localhost`              |
+| `BD_PORT`           | Puerto de la base de datos               | `5432`                   |
+| `BD_DATABASE`       | Nombre de la base de datos               | `franchises_db`          |
+| `BD_SHEMA`          | Esquema usado en la base de datos        | `public`                 |
+| `BD_USERNAME`       | Usuario de la base de datos              | `postgres`               |
+| `BD_PASSWORD`       | Contraseña del usuario                   | `postgres`               |
+| `REST_BASE_PATH`    | Path base para los endpoints REST        | `/api/v1`                |
 
-## Usecases
+---
 
-Este módulo gradle perteneciente a la capa del dominio, implementa los casos de uso del sistema, define lógica de aplicación y reacciona a las invocaciones desde el módulo de entry points, orquestando los flujos hacia el módulo de entities.
+Se requiere contar un una BD postgrets contenerizada para almacenar lo informacion
+con el siguiente esquema de BD 
 
-## Infrastructure
+CREATE TABLE franchise (
+franchise_id SERIAL PRIMARY KEY,
+name VARCHAR(255) NOT NULL
+);
 
-### Helpers
+CREATE TABLE branch (
+branch_id SERIAL PRIMARY KEY,
+franchise_id INT NOT NULL REFERENCES franchise(franchise_id) ON DELETE CASCADE ON UPDATE CASCADE,
+name VARCHAR(255) NOT NULL,
+city VARCHAR(255)
+);
 
-En el apartado de helpers tendremos utilidades generales para los Driven Adapters y Entry Points.
-
-Estas utilidades no están arraigadas a objetos concretos, se realiza el uso de generics para modelar comportamientos
-genéricos de los diferentes objetos de persistencia que puedan existir, este tipo de implementaciones se realizan
-basadas en el patrón de diseño [Unit of Work y Repository](https://medium.com/@krzychukosobudzki/repository-design-pattern-bc490b256006)
-
-Estas clases no puede existir solas y debe heredarse su compartimiento en los **Driven Adapters**
-
-### Driven Adapters
-
-Los driven adapter representan implementaciones externas a nuestro sistema, como lo son conexiones a servicios rest,
-soap, bases de datos, lectura de archivos planos, y en concreto cualquier origen y fuente de datos con la que debamos
-interactuar.
-
-### Entry Points
-
-Los entry points representan los puntos de entrada de la aplicación o el inicio de los flujos de negocio.
-
-## Application
-
-Este módulo es el más externo de la arquitectura, es el encargado de ensamblar los distintos módulos, resolver las dependencias y crear los beans de los casos de use (UseCases) de forma automática, inyectando en éstos instancias concretas de las dependencias declaradas. Además inicia la aplicación (es el único módulo del proyecto donde encontraremos la función “public static void main(String[] args)”.
-
-**Los beans de los casos de uso se disponibilizan automaticamente gracias a un '@ComponentScan' ubicado en esta capa.**
+CREATE TABLE product (
+product_id SERIAL PRIMARY KEY,
+branch_id INT NOT NULL REFERENCES branch(branch_id) ON DELETE CASCADE ON UPDATE CASCADE,
+name VARCHAR(255) NOT NULL,
+stock INT NOT NULL DEFAULT 0,
+price NUMERIC(10,2)
+);
