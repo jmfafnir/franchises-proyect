@@ -10,14 +10,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ManageBranchUseCase {
 
-    private final  BranchRepository branchRepository;
+    private final BranchRepository branchRepository;
 
     public Mono<Product> addProductToBranch(String branchName, Product product){
         return branchRepository.addProduct(branchName,product);
     }
 
     public Mono<Boolean> deleteProductToBranch(String branchName, String productName){
-        return branchRepository.deleteProduct(branchName,branchName);
+        return branchRepository.deleteProduct(branchName,productName);
     }
 
     public Mono<Branch> changeName(String oldName, String newName){
