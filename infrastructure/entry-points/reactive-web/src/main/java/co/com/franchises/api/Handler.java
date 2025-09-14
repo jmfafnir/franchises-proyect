@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class Handler {
+
     private final ManageFranchiseUseCase franchiseUseCase;
     private final ManageBranchUseCase branchUseCase;
     private final ManageProductUseCase productUseCase;
