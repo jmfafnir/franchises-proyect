@@ -39,7 +39,7 @@ public class BranchRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Product> addProduct(String branchName, Product product) {
-        return findById(branchName)
+        return repository.findById(branchName)
                 .switchIfEmpty(Mono.error(new BusinessException(BussinesExceptionEnum.BUSINESS_BRANCH_NOT_FOUND)))
                 .flatMap(branch ->
                         productDataRepository.findById(product.getProductName())
@@ -60,7 +60,7 @@ public class BranchRepositoryAdapter extends ReactiveAdapterOperations<
 
     @Override
     public Mono<Boolean> deleteProduct(String branchName, String productName) {
-        return findById(branchName)
+        return repository.findById(branchName)
                 .switchIfEmpty(Mono.error(
                         new BusinessException(BussinesExceptionEnum.BUSINESS_BRANCH_NOT_FOUND)))
                 .flatMap(branch ->

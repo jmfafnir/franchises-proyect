@@ -102,12 +102,10 @@ class BranchRepositoryAdapterTest {
         Product product = Product.builder().productName("P001").stock(10).build();
         BranchData branch = BranchData.builder().id("B001").build();
         ProductData savedProduct = ProductData.builder().id("P001").branchId("B001").stock(10).build();
-        Product productEntity = Product.builder().productName("P001").stock(10).build();
 
         when(branchRepository.findById("B001")).thenReturn(Mono.just(branch));
         when(productDataRepository.findById("P001")).thenReturn(Mono.empty());
         when(productDataRepository.save(any(ProductData.class))).thenReturn(Mono.just(savedProduct));
-        when(mapper.map(savedProduct, Product.class)).thenReturn(productEntity);
 
         StepVerifier.create(adapter.addProduct("B001", product))
                 .expectNextMatches(p -> p.getProductName().equals("P001") && p.getStock() == 10)
