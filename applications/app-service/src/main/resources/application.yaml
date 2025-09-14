@@ -1,23 +1,52 @@
-
 server:
-  port: 8080
+  port: "${SERVER_PORT}"
+  servlet:
+    encoding:
+      charset: 'UTF-8'
+      force: true
 spring:
   application:
-    name: franchises
+    name: "franchises"
   devtools:
     add-properties: false
   h2:
     console:
       enabled: true
-      path: /h2
-  profiles:
-    include:
+      path: "/h2"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,prometheus"
+  endpoint:
+    health:
+      probes:
+        enabled: true
 
 adapters:
   r2dbc:
     host: "${BD_HOST}"
     port: "${BD_PORT}"
     database: "${BD_DATABASE}"
-    shema: "${BD_SHEMA}"
+    schema: "${BD_SCHEMA}"
     username: "${BD_USERNAME}"
     password: "${BD_PASSWORD}"
+entries:
+  reactive-web:
+    path-base: "${REST_BASE_PATH}"
+    request-franchise:
+      request-add: "${REST_BASE_PATH}/franchise/add"
+      request-change-name: "${REST_BASE_PATH}/franchise/change/name"
+      request-get-products: "${REST_BASE_PATH}/franchise/get/inventory"
+      request-add-branch: "${REST_BASE_PATH}/franchise/add/branch"
+    request-branch:
+      request-change-name: "${REST_BASE_PATH}/branch/change/name"
+      request-add-product: "${REST_BASE_PATH}/branch/add/product"
+      request-delete-product: "${REST_BASE_PATH}/branch/delete/product"
+    request-product:
+      request-change-name: "${REST_BASE_PATH}/product/change/name"
+      request-change-stock: "${REST_BASE_PATH}/product/change/stock"
+
+cors:
+  allowed-origins: "http://localhost:4200,http://localhost:8080"
