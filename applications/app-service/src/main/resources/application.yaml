@@ -1,4 +1,4 @@
-##Spring Configuration
+
 server:
   port: 8080
 spring:
@@ -12,3 +12,12 @@ spring:
       path: /h2
   profiles:
     include:
+
+adapters:
+  r2dbc:
+    host: "${BD_HOST}"
+    port: "${BD_PORT}"
+    database: "${BD_DATABASE}"
+    shema: "${BD_SHEMA}"
+    username: "${BD_USERNAME}"
+    password: "${BD_PASSWORD}"
